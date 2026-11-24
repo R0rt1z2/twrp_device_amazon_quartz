@@ -1,0 +1,24 @@
+on fs
+    symlink /dev/block/platform/soc/11230000.mmc /dev/block/platform/bootdevice
+    symlink /dev/block/platform/bootdevice/by-name /dev/block/by-name
+    wait /dev/block/platform/bootdevice/by-name/userdata 15
+    wait /dev/block/platform/bootdevice/by-name/super 15
+    exec_start fix-symlinks
+
+on boot
+    start health-hal-2-0
+    write /sys/block/mmcblk0boot0/force_ro 1
+
+on property:twrp.preloader=rw
+    write /sys/block/mmcblk0boot0/force_ro 0
+
+on property:twrp.preloader=ro
+    write /sys/block/mmcblk0boot0/force_ro 1
+
+service fix-symlinks /system/bin/sh /system/bin/fix-symlinks.sh
+    seclabel u:r:recovery:s0
+    disabled
+    oneshot
+
+service watchdogd /system/bin/watchdogd 20 10
+    seclabel u:r:watchdogd:s0

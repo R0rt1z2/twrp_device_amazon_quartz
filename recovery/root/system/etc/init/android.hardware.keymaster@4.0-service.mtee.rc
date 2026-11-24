@@ -1,0 +1,9 @@
+service vendor.keymaster-4-0-mtee /vendor/bin/hw/android.hardware.keymaster@4.0-service.mtee
+    user root
+    group root system drmrpc
+    seclabel u:r:recovery:s0
+    setenv LD_LIBRARY_PATH /vendor/lib64:/vendor/lib64/hw
+    disabled
+
+on post-fs
+    start vendor.keymaster-4-0-mtee
